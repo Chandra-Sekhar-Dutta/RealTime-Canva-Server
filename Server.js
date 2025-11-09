@@ -2,13 +2,11 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
-const path = require('path');
 
 const RoomManager = require('./rooms');
 const DrawingStateManager = require('./drawing-state');
 
 const PORT = process.env.PORT || 3000;
-const CLIENT_PATH = path.join(__dirname, '../Client');
 
 const app = express();
 const server = http.createServer(app);
@@ -29,7 +27,6 @@ const roomUserCounters = new Map();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(CLIENT_PATH));
 
 app.get('/api/health', (req, res) => {
   res.json({
@@ -57,7 +54,11 @@ app.get('/api/rooms/:roomId', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(CLIENT_PATH, 'index.html'));
+  res.json({
+    message: 'Collaborative Canvas Server is running',
+    status: 'ok',
+    frontendUrl: 'https://real-time-canva.vercel.app'
+  });
 });
 
 io.on('connection', (socket) => {
